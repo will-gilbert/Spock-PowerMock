@@ -1,0 +1,103 @@
+
+
+apply plugin: 'groovy'
+
+import static java.awt.Desktop.desktop
+
+
+//============================================================================================
+// U S A G E   ===============================================================================
+//============================================================================================
+
+task usage doLast { print  """${'='*80}
+Usage:
+
+
+${'='*80}
+"""}
+
+//============================================================================================
+// R E P O S I T O R I E S   &   D E P E N D E N C I E S  ====================================
+//============================================================================================
+
+repositories {
+    jcenter()
+    mavenLocal()
+    mavenCentral()
+}
+
+// NB: Mockito and PowerMock version need to be compatible
+// https://github.com/powermock/powermock/wiki/Mockito#supported-versions
+
+dependencies {
+
+    def junit  = '4.12'
+    def mockito = '1.10.19'
+    def powermock = '1.6.6'
+    def spock = '1.1-groovy-2.4'
+
+    compile group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.0'
+
+    testCompile group: 'org.mockito',        name: 'mockito-core',            version: mockito
+    testCompile group: 'org.powermock',      name: 'powermock-api-mockito',   version: powermock
+    testCompile group: 'org.powermock',      name: 'powermock-module-junit4', version: powermock
+    
+    testCompile group: 'cglib',              name: 'cglib-nodep', version: '3.2.5'
+    testCompile group: 'junit',              name: 'junit',       version: junit
+    testCompile group: 'org.spockframework', name: 'spock-core',  version: spock
+
+    testCompile( 'com.athaydes:spock-reports:1.4.0' ) {
+        transitive = false // this avoids affecting your version of Groovy/Spock
+    }
+    // if you don't already have slf4j-api and an implementation of it in the classpath, add this!
+    testCompile 'org.slf4j:slf4j-api:1.7.13'
+    testCompile 'org.slf4j:slf4j-simple:1.7.13'
+}
+
+//============================================================================================
+// T E S T I N G   ===========================================================================
+//============================================================================================
+
+task clearReports doLast {
+    delete testReportDir
+    delete "$buildDir.name/$reportsDir.name/../spock-reports"
+}
+
+
+task report {
+    doLast {
+        desktop.browse(new File("$buildDir.name/$reportsDir.name/tests/test", 'index.html').toURI())
+        desktop.browse(new File("$buildDir.name/$reportsDir.name/../spock-reports", 'index.html').toURI())
+    }  
+}
+
+test {
+
+    dependsOn(clearReports)
+  
+    // If any tests file, move onto the next task e.g. Serenity aggregate
+    ignoreFailures true
+
+    // Always run tests; When you have changed the data but not the test code
+    outputs.upToDateWhen { false }
+    
+    // Display a red/green bar of test results
+    testLogging { 
+        afterSuite { desc, result ->
+          if (desc.parent == null) {
+                print '\033[1;37m'
+                // Green background for success, red for failures
+                print ((result.resultType.toString() == "SUCCESS") ? '\033[1;42m' : '\033[1;41m')
+                print "Results: ${result.resultType} "
+                print "(${result.testCount} tests, "
+                print "${result.successfulTestCount} successes, "
+                print "${result.failedTestCount} failures, "
+                print "${result.skippedTestCount} skipped)"
+                println '\033[0m'
+            }
+        }
+    }
+
+    finalizedBy 'report'
+
+}
