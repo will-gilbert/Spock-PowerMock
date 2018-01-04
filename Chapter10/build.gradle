@@ -12,6 +12,19 @@ import static java.awt.Desktop.desktop
 task usage doLast { print  """${'='*80}
 Usage:
 
+Clean the project; Run all tests; Display the result in the default browser
+
+   gradle clean test 
+
+Run only the JUnit tests:
+
+   gradle test --tests com.gitshah.powermock.*Test
+
+Run only the Spock tests:
+
+   gradle test --tests com.gitshah.powermock.*Spec
+
+NB: Use '--quiet' or '-q' to supress Gradle build output lines
 
 ${'='*80}
 """}
