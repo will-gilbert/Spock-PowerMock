@@ -1,6 +1,7 @@
 
 
 apply plugin: 'groovy'
+apply plugin: 'jacoco'
 
 import static java.awt.Desktop.desktop
 
@@ -14,15 +15,15 @@ Usage:
 
 Clean the project; Run all tests; Display the result in the default browser
 
-   gradle clean test 
+   gradle clean test check reports
 
 Run only the JUnit tests:
 
-   gradle test --tests com.gitshah.powermock.*Test
+   gradle test --tests *Test check reports
 
 Run only the Spock tests:
 
-   gradle test --tests com.gitshah.powermock.*Spec
+   gradle test --tests *Spec check reports
 
 NB: Use '--quiet' or '-q' to supress Gradle build output lines
 
@@ -77,12 +78,29 @@ task clearReports doLast {
 }
 
 
-task report {
+task reports {
     doLast {
-        desktop.browse(new File("$buildDir.name/$reportsDir.name/tests/test", 'index.html').toURI())
-        desktop.browse(new File("$buildDir.name/$reportsDir.name/../spock-reports", 'index.html').toURI())
+        def reports = [
+            new File("$buildDir.name/$reportsDir.name/tests/test", 'index.html'),
+            new File("$buildDir.name/$reportsDir.name/../spock-reports", 'index.html'),
+            new File("$buildDir.name/$reportsDir.name/jacoco/test/html", 'index.html')
+        ]
+
+        reports.each { file ->
+            if(file.exists())
+                desktop.browse(file.toURI())
+        }
     }  
 }
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
+
+check.dependsOn jacocoTestReport
 
 test {
 
@@ -110,7 +128,4 @@ test {
             }
         }
     }
-
-    finalizedBy 'report'
-
 }
