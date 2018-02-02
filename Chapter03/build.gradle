@@ -46,14 +46,14 @@ repositories {
 dependencies {
 
     def junit  = '4.12'
-    def mockito = '1.10.19'
-    def powermock = '1.6.6'
+    def mockito = '2.9.0'
+    def powermock = '1.7.3'
     def spock = '1.1-groovy-2.4'
 
     compile group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.0'
 
     testCompile group: 'org.mockito',        name: 'mockito-core',            version: mockito
-    testCompile group: 'org.powermock',      name: 'powermock-api-mockito',   version: powermock
+    testCompile group: 'org.powermock',      name: 'powermock-api-mockito2',  version: powermock
     testCompile group: 'org.powermock',      name: 'powermock-module-junit4', version: powermock
     
     testCompile group: 'cglib',              name: 'cglib-nodep', version: '3.2.5'
