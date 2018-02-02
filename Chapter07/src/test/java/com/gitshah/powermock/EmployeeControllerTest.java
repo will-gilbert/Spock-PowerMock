@@ -130,6 +130,7 @@ public class EmployeeControllerTest {
         //A little more complex matcher using the ArgumentMatcher class.
         //By implementing the matches method in this class we can write any kind of complex logic
         //to validate that the correct arguments are being passed.
+
         final String employeeEmail = "packt@gitshah.com";
         PowerMockito.when(mock.employeeExists(Mockito.argThat(new ArgumentMatcher<Employee>() {
             /**
@@ -139,8 +140,8 @@ public class EmployeeControllerTest {
              * {@inheritDoc}
              */
             @Override
-            public boolean matches(Object employee) {
-                return ((Employee) employee).getEmail().equals(employeeEmail);
+            public boolean matches(Employee employee) {
+                return employee.getEmail().equals(employeeEmail);
             }
         }))).thenReturn(true);
 

@@ -182,8 +182,8 @@ public class EmployeeControllerTest {
              * {@inheritDoc}
              */
             @Override
-            public boolean matches(Object employee) {
-                return ((Employee) employee).getEmail().equals(employeeEmail);
+            public boolean matches(Employee employee) {
+                return employee.getEmail().equals(employeeEmail);
             }
         }))).thenReturn(true);
 
